@@ -26,6 +26,10 @@ public class DashboardActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if(item.getItemId() == R.id.page_3){
+                    Intent profileIntent = new Intent(DashboardActivity.this, BudgetActivity.class);
+                    startActivity(profileIntent);
+                }
                 if(item.getItemId() == R.id.page_4){
                     Intent profileIntent = new Intent(DashboardActivity.this, ProfileActivity.class);
                     startActivity(profileIntent);

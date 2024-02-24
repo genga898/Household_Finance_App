@@ -31,6 +31,10 @@ public class ProfileActivity extends AppCompatActivity {
                     Intent dashboardIntent = new Intent(ProfileActivity.this, DashboardActivity.class);
                     startActivity(dashboardIntent);
                 }
+                if(item.getItemId() == R.id.page_3){
+                    Intent dashboardIntent = new Intent(ProfileActivity.this, BudgetActivity.class);
+                    startActivity(dashboardIntent);
+                }
                 return false;
             }
         });
