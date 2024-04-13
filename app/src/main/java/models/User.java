@@ -1,9 +1,15 @@
-import java.util.Currency;
+package models;
+
+import androidx.annotation.NonNull;
+
+import java.util.List;
 
 public class User {
+    public String name;
     public String emailAddress;
-    String password;
-    Currency income;
+    public String password;
+    public List<Goal> goals;
+    public String role;
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
@@ -21,11 +27,23 @@ public class User {
         this.password = password;
     }
 
-    public Currency getIncome() {
-        return income;
+    public String getName() {
+        return name;
     }
 
-    public void setIncome(Currency income) {
-        this.income = income;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRole(@NonNull String role) {
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public List<Goal> getGoals() {
+        return goals;
     }
 }

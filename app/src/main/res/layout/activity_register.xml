@@ -42,6 +42,7 @@
             app:boxStrokeColor="@color/md_theme_light_onBackground">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/users_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/md_theme_light_onBackground"
@@ -58,6 +59,7 @@
             app:boxStrokeColor="@color/md_theme_light_onBackground">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/email_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/md_theme_light_onBackground"
@@ -76,6 +78,7 @@
             app:passwordToggleTint="@color/md_theme_light_onBackground">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reg_pass_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/md_theme_light_onBackground"
@@ -93,6 +96,7 @@
             app:passwordToggleEnabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/confirm_pass_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/md_theme_light_onBackground"

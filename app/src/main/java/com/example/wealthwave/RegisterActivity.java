@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,11 +24,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,8 +32,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.grpc.okhttp.internal.Util;
-import models.Role;
 import models.User;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -130,6 +123,11 @@ public class RegisterActivity extends AppCompatActivity {
 										passwordText.setError("Password is required");
 										return;
 								}
+								if (!isPasswordValid(password.getText().toString().trim())) {
+										passwordText.setErrorEnabled(true);
+										password.setError("Your password must be at least 9 characters long, include at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+										return;
+								}
 								if (!confirmPassword.getText().toString().trim().equals(password.getText().toString().trim())){
 										confirmPasswordText.setErrorEnabled(true);
 										confirmPasswordText.setError("Passwords do not match");
@@ -141,38 +139,10 @@ public class RegisterActivity extends AppCompatActivity {
 										registerBtn.setEnabled(false);
 										User user = new User();
 
-										/* Check if the user roles exist in the database */
-										FirebaseFirestore.setLoggingEnabled(true);
-										firestore = FirebaseFirestore.getInstance();
-
-										DocumentReference roleReference = firestore.collection("roles").document("user_roles");
-										roleReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-												@Override
-												public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-														if (!value.exists()){
-																//Create the user role
-																Role newUserRole = new Role();
-																newUserRole.setRoleName("User");
-																roleReference.set(newUserRole);
-														}
-
-														roleReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-																@Override
-																public void onSuccess(DocumentSnapshot documentSnapshot) {
-																		if (documentSnapshot.exists()) {
-																				Role userRole = documentSnapshot.toObject(Role.class);
-																				if (userRole != null) {
-																						user.setRole(userRole);
-																				}
-																		}
-																}
-														});
-												}
-										});
-
 										user.setName(username.getText().toString().trim());
 										user.setEmailAddress(email.getText().toString().trim().toLowerCase());
 										user.setPassword(password.getText().toString().trim());
+										user.setRole("user");
 										CreateUser(user);
 								} catch (Error error) {
 										throw new RuntimeException(error);
@@ -209,7 +179,6 @@ public class RegisterActivity extends AppCompatActivity {
 																userInfo.put("name",user.getName());
 																userInfo.put("email", user.getEmailAddress());
 																userInfo.put("role", user.getRole());
-																userInfo.put("goals", user.getGoals());
 
 																/* Store extra information about users */
 																firestore = FirebaseFirestore.getInstance();
@@ -235,7 +204,7 @@ public class RegisterActivity extends AppCompatActivity {
 																						MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(RegisterActivity.this)
 																										.setTitle("Confirm Email")
 																										.setMessage(
-																														String.format("An email has been sent to %s to verify your email address. Kindly confirm your email address", firebaseUser.getEmail()))
+																														String.format("Registration successful, an email has been sent to %s for verification. Kindly confirm your email address", firebaseUser.getEmail()))
 																										.setNegativeButton("Close", new DialogInterface.OnClickListener() {
 																												@Override
 																												public void onClick(DialogInterface dialog, int which) {
@@ -284,6 +253,15 @@ public class RegisterActivity extends AppCompatActivity {
 				Matcher matcher = pattern.matcher(email);
 				return matcher.matches();
 		}
+
+		private boolean isPasswordValid(String password){
+				String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+
+				Pattern pattern = Pattern.compile(passwordRegex);
+				Matcher matcher = pattern.matcher(password);
+				return matcher.matches();
+		}
+
 		private void showToast(CharSequence toastMessage){
 				int duration = Toast.LENGTH_SHORT;
 				Toast toast = Toast.makeText(this /* MyActivity */, toastMessage, duration);

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingTop="20dp"
+    android:paddingHorizontal="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/budget_amount"
+        style="@style/LoginTextInputLayoutStyleLight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Amount"
+        app:suffixText="KES"
+        android:layout_marginBottom="10dp"
+        android:textColorHint="@color/md_theme_light_onBackground"
+        app:boxStrokeColor="@color/md_theme_light_onBackground">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/budget_amount_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/md_theme_light_onBackground"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>

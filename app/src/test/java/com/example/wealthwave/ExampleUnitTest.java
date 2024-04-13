@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.wealthwave;
 
 import org.junit.Test;
 

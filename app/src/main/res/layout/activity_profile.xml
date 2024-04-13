@@ -8,178 +8,108 @@
     android:orientation="vertical"
     tools:context=".ProfileActivity">
 
-    <ScrollView
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbars="none">
+        android:isScrollContainer="true"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:isScrollContainer="true"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="Profile"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/md_theme_light_primary"
+            android:textSize="30sp" />
 
-            <TextView
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Material3.CardView.Filled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:backgroundTint="@color/md_theme_light_secondaryContainer">
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="Profile"
-                android:textAlignment="center"
-                android:textAllCaps="true"
-                android:textColor="@color/md_theme_light_primary"
-                android:textSize="30sp" />
+                android:padding="10dp">
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Material3.CardView.Filled"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
-                android:backgroundTint="@color/md_theme_light_secondaryContainer">
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@color/md_theme_light_background"
+                    android:contentDescription="@string/profile_image"
+                    android:src="@drawable/savings"
+                    app:shapeAppearanceOverlay="@style/CircularImage" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10dp">
+                    android:layout_centerInParent="true"
+                    android:layout_toEndOf="@+id/profile_image"
+                    android:orientation="vertical">
 
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/profile_image"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="@color/md_theme_light_background"
-                        android:contentDescription="@string/profile_image"
-                        android:src="@drawable/savings"
-                        app:shapeAppearanceOverlay="@style/CircularImage" />
-
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/full_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_toEndOf="@+id/profile_image"
-                        android:orientation="vertical">
+                        android:textAlignment="center"
+                        android:textColor="@color/md_theme_light_primary"
+                        android:textSize="16sp" />
 
-                        <TextView
-                            android:id="@+id/full_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Emmanuel Genga"
-                            android:textAlignment="center"
-                            android:textColor="@color/md_theme_light_primary"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/email_address"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="genga898@gmail.com"
-                            android:textAlignment="center"
-                            android:textColor="@color/md_theme_light_primary"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-                </RelativeLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Material3.CardView.Filled"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
-                android:backgroundTint="@color/md_theme_light_secondaryContainer">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingHorizontal="5dp"
-                    android:paddingVertical="10dp"
-                    android:orientation="vertical">
-                    <Button
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:id="@+id/account_info"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/email_address"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Account Information"
-                        android:textAlignment="textStart"
+                        android:textAlignment="center"
                         android:textColor="@color/md_theme_light_primary"
-                        android:textSize="16sp"/>
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        app:dividerColor="@color/md_theme_light_primary"/>
-                    <Button
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:id="@+id/password_change"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Change Password"
-                        android:textAlignment="textStart"
-                        android:textColor="@color/md_theme_light_primary"
-                        android:textSize="16sp"/>
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        app:dividerColor="@color/md_theme_light_primary"/>
-                    <Button
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:id="@+id/weekly_report"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Weekly Report"
-                        android:textAlignment="textStart"
-                        android:textColor="@color/md_theme_light_primary"
-                        android:textSize="16sp"/>
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        app:dividerColor="@color/md_theme_light_primary"/>
-                    <Button
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:id="@+id/statistics"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Usage Statistics"
-                        android:textAlignment="textStart"
-                        android:textColor="@color/md_theme_light_primary"
-                        android:textSize="16sp"/>
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        app:dividerColor="@color/md_theme_light_primary"/>
-                    <Button
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:id="@+id/app_users"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Application Users"
-                        android:textAlignment="textStart"
-                        android:textColor="@color/md_theme_light_primary"
-                        android:textSize="16sp"/>
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        app:dividerColor="@color/md_theme_light_primary"/>
-                    <Button
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:id="@+id/account_members"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Account Members"
-                        android:textAlignment="textStart"
-                        android:textColor="@color/md_theme_light_primary"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <Button
-                android:id="@+id/logout_button"
-                style="@style/Widget.Material3.Button"
+            </RelativeLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Material3.CardView.Filled"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginVertical="5dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/md_theme_light_secondaryContainer">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:text="Logout"
-                android:backgroundTint="@color/md_theme_light_primary"
-                android:textAllCaps="false"
-                android:textColor="@color/md_theme_dark_onBackground" />
-        </LinearLayout>
-    </ScrollView>
+                android:layout_height="match_parent"
+                android:isScrollContainer="true"
+                android:orientation="vertical"
+                android:paddingHorizontal="10dp">
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/list_view"
+                    tools:listitem="@layout/list_view"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <Button
+            android:id="@+id/logout_button"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/md_theme_light_primary"
+            android:text="Logout"
+            android:textAllCaps="false"
+            android:textColor="@color/md_theme_dark_onBackground" />
+    </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
