@@ -1,5 +1,5 @@
-
 <resources>
+
     <style name="AppTheme" parent="Theme.Material3.Light">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
@@ -32,12 +32,21 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="LoginTextInputLayoutStyleLight" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="hintTextColor">@color/md_theme_light_onBackground</item>
         <item name="hintTextAppearance">@color/md_theme_light_onBackground</item>
         <item name="boxStrokeColor">@color/md_theme_light_onBackground</item>
         <item name="boxStrokeWidth">2dp</item>
     </style>
+
+    <style name="LoginTextUnderLineInputLayoutStyleLight" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="hintTextColor">@color/md_theme_light_onBackground</item>
+        <item name="hintTextAppearance">@color/md_theme_light_onBackground</item>
+        <item name="boxStrokeColor">@color/md_theme_light_onBackground</item>
+        <item name="boxStrokeWidth">2dp</item>
+    </style>
+
     <style name="CircularImage">
         <item name="cornerSize">50%</item>
     </style>

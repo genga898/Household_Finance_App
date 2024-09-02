@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="15dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"
+        android:text="Create monthly budget"
+        android:textAlignment="center"
+        android:textColor="@color/md_theme_light_onBackground"
+        android:textSize="16sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkbox_groceries"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/groceries_amt"
+            android:layout_alignParentStart="true"
+            android:text="Groceries" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/groceries_amt"
+            style="@style/LoginTextUnderLineInputLayoutStyleLight"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:hint="Amount"
+            android:textColorHint="@color/md_theme_light_onBackground"
+            app:boxStrokeColor="@color/md_theme_light_onBackground"
+            app:suffixText="KES">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amt_groceries"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/md_theme_light_onBackground" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkbox_sch_fees"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/sch_fees_amt"
+            android:layout_alignParentStart="true"
+            android:text="School Fees" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sch_fees_amt"
+            style="@style/LoginTextUnderLineInputLayoutStyleLight"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:hint="Amount"
+            android:textColorHint="@color/md_theme_light_onBackground"
+            app:boxStrokeColor="@color/md_theme_light_onBackground"
+            app:suffixText="KES">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amt_sch_fees"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/md_theme_light_onBackground" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkbox_insurance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/insurance_amt"
+            android:layout_alignParentStart="true"
+            android:text="Insurance" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/insurance_amt"
+            style="@style/LoginTextUnderLineInputLayoutStyleLight"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:hint="Amount"
+            android:textColorHint="@color/md_theme_light_onBackground"
+            app:boxStrokeColor="@color/md_theme_light_onBackground"
+            app:suffixText="KES">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amt_insurance"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/md_theme_light_onBackground" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkbox_entertainment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/entertainment_amt"
+            android:layout_alignParentStart="true"
+            android:text="Entertainment" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/entertainment_amt"
+            style="@style/LoginTextUnderLineInputLayoutStyleLight"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:hint="Amount"
+            android:textColorHint="@color/md_theme_light_onBackground"
+            app:boxStrokeColor="@color/md_theme_light_onBackground"
+            app:suffixText="KES">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amt_entertainment"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/md_theme_light_onBackground" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkbox_utilities"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/utilities_amt"
+            android:layout_alignParentStart="true"
+            android:text="Utilities" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/utilities_amt"
+            style="@style/LoginTextUnderLineInputLayoutStyleLight"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:hint="Amount"
+            android:textColorHint="@color/md_theme_light_onBackground"
+            app:boxStrokeColor="@color/md_theme_light_onBackground"
+            app:suffixText="KES">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amt_utilities"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/md_theme_light_onBackground" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp"
+        android:layout_marginBottom="10dp">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkbox_loans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/loans_amt"
+            android:layout_alignParentStart="true"
+            android:text="Debts" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/loans_amt"
+            style="@style/LoginTextUnderLineInputLayoutStyleLight"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:hint="Amount"
+            android:textColorHint="@color/md_theme_light_onBackground"
+            app:boxStrokeColor="@color/md_theme_light_onBackground"
+            app:suffixText="KES">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amt_loans"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/md_theme_light_onBackground" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/add_budget"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/md_theme_light_onSurface"
+        android:paddingVertical="15dp"
+        android:text="Add budget"
+        android:textAllCaps="true"
+        android:textColor="@color/md_theme_light_onPrimary" />
+</LinearLayout>

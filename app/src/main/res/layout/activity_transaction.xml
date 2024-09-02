@@ -45,6 +45,7 @@
         >
         <androidx.recyclerview.widget.RecyclerView
             android:isScrollContainer="true"
+            android:scrollbars="vertical"
             android:id="@+id/transactions_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -25,7 +25,7 @@ public class Splash_Screen extends AppCompatActivity {
             NetworkInfo nInfo = cm.getActiveNetworkInfo();
 
             if (nInfo!=null && nInfo.isConnectedOrConnecting() && nInfo.isAvailable()){
-                Thread.sleep(3000);
+                Thread.sleep(5000);
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 finish();
@@ -35,7 +35,11 @@ public class Splash_Screen extends AppCompatActivity {
                         .setPositiveButton("Try again", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
+                                if (nInfo!=null && nInfo.isConnectedOrConnecting() && nInfo.isAvailable()){
+                                    Intent intent = new Intent(Splash_Screen.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
                             }
                         });
                 dialogBuilder.create();

@@ -27,9 +27,6 @@ public class Budget {
 		public Budget(){
 
 		}
-		public void setBudgetId(UUID budgetId) {
-				this.budgetId = budgetId.toString();
-		}
 
 		public String getBudgetId() {
 				return budgetId;
@@ -37,10 +34,6 @@ public class Budget {
 
 		public String getBudgetName() {
 				return budgetName;
-		}
-
-		public void setBudgetName(String budgetName) {
-				this.budgetName = budgetName;
 		}
 
 		public Double getAmount() {
@@ -53,9 +46,5 @@ public class Budget {
 
 		public String getCreationDate() {
 				return createdAt;
-		}
-
-		public void setCreationDate(String date) {
-				this.createdAt = date;
 		}
 }

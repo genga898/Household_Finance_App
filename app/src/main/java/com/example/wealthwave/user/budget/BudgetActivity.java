@@ -1,14 +1,14 @@
 package com.example.wealthwave.user.budget;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.wealthwave.DashboardActivity;
 import com.example.wealthwave.ProfileActivity;
@@ -34,76 +34,76 @@ import models.dtos.RemainingBudgetDto;
 
 public class BudgetActivity extends AppCompatActivity {
 
-    private ActivityBudgetBinding binding;
+		private ActivityBudgetBinding binding;
 		private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 		private final FirebaseDatabase databaseReference = FirebaseDatabase.getInstance("https://wealthwave-c1cca-default-rtdb.europe-west1.firebasedatabase.app");
 		private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 		private LocalDateTime dateTime = LocalDateTime.now();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		@Override
+		protected void onCreate(Bundle savedInstanceState) {
+				super.onCreate(savedInstanceState);
+				getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        binding = ActivityBudgetBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+				binding = ActivityBudgetBinding.inflate(getLayoutInflater());
+				setContentView(binding.getRoot());
 
-        VPFragmentAdapter viewPagerAdapter = new VPFragmentAdapter(this);
-        binding.viewPager.setAdapter(viewPagerAdapter);
-        binding.bottomNavigation.setSelectedItemId(R.id.page_3);
+				VPFragmentAdapter viewPagerAdapter = new VPFragmentAdapter(this);
+				binding.viewPager.setAdapter(viewPagerAdapter);
+				binding.bottomNavigation.setSelectedItemId(R.id.page_3);
 
-        binding.bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId() == R.id.page_1){
-                    Intent profileIntent = new Intent(BudgetActivity.this, DashboardActivity.class);
-                    startActivity(profileIntent);
-                    finish();
-                }
-                if(item.getItemId() == R.id.page_2){
-                    Intent transactionIntent = new Intent(BudgetActivity.this, TransactionActivity.class);
-                    startActivity(transactionIntent);
-                    finish();
-                }
-                if(item.getItemId() == R.id.page_4){
-                    Intent profileIntent = new Intent(BudgetActivity.this, ProfileActivity.class);
-                    startActivity(profileIntent);
-                    finish();
-                }
-                return false;
-            }
-        });
+				binding.bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+						@Override
+						public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+								if (item.getItemId() == R.id.page_1) {
+										Intent profileIntent = new Intent(BudgetActivity.this, DashboardActivity.class);
+										startActivity(profileIntent);
+										finish();
+								}
+								if (item.getItemId() == R.id.page_2) {
+										Intent transactionIntent = new Intent(BudgetActivity.this, TransactionActivity.class);
+										startActivity(transactionIntent);
+										finish();
+								}
+								if (item.getItemId() == R.id.page_4) {
+										Intent profileIntent = new Intent(BudgetActivity.this, ProfileActivity.class);
+										startActivity(profileIntent);
+										finish();
+								}
+								return false;
+						}
+				});
 
-        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                binding.viewPager.setCurrentItem(tab.getPosition());
-            }
+				binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+						@Override
+						public void onTabSelected(TabLayout.Tab tab) {
+								binding.viewPager.setCurrentItem(tab.getPosition());
+						}
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
+						@Override
+						public void onTabUnselected(TabLayout.Tab tab) {
+						}
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                binding.viewPager.setCurrentItem(tab.getPosition());
-            }
-        });
+						@Override
+						public void onTabReselected(TabLayout.Tab tab) {
+								binding.viewPager.setCurrentItem(tab.getPosition());
+						}
+				});
 
-        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                binding.tabLayout.getTabAt(position).select();
-            }
-        });
+				binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+						@Override
+						public void onPageSelected(int position) {
+								super.onPageSelected(position);
+								binding.tabLayout.getTabAt(position).select();
+						}
+				});
 
 				//Get budget balance
-		    GetBudgetBalance();
+				GetBudgetBalance();
 
-    }
+		}
 
-		private void GetBudgetBalance(){
+		private void GetBudgetBalance() {
 				List<RemainingBudgetDto> budgetDtoList = new ArrayList<>();
 				// Get remaining budgets from the db
 				databaseReference.getReference("Remaining Budgets")
@@ -113,17 +113,17 @@ public class BudgetActivity extends AppCompatActivity {
 								.addValueEventListener(new ValueEventListener() {
 										@Override
 										public void onDataChange(@NonNull DataSnapshot snapshot) {
-												if (snapshot.exists()){
-														for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
+												if (snapshot.exists()) {
+														for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 																RemainingBudgetDto remainingBudget = dataSnapshot.getValue(RemainingBudgetDto.class);
 																budgetDtoList.add(remainingBudget);
-																if (remainingBudget != null && Objects.equals(remainingBudget.getBudget(), "Entertainment")){
+																DecimalFormat format = new DecimalFormat("#,###,###,###.00");
+																Double ammount = 0.00;
 
-																		DecimalFormat format = new DecimalFormat("#,###,###,###.00");
-
-																		String amount = format.format(remainingBudget.getRemainingAmt());
-																		binding.amount.setText(String.format("KES %s", amount));
+																for (RemainingBudgetDto budget : budgetDtoList) {
+																		ammount += budget.getRemainingAmt();
 																}
+																binding.amount.setText(String.format("KES %s", format.format(ammount)));
 														}
 
 												}

@@ -9,20 +9,19 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.example.wealthwave.databinding.ActivityDashboardBinding;
 import com.example.wealthwave.user.budget.BudgetActivity;
+import com.example.wealthwave.user.budget.RemainingBudgetWorker;
 import com.example.wealthwave.user.transactions.TransactionActivity;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.Utils;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,16 +34,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-import models.dtos.BudgetDto;
 import models.dtos.RemainingBudgetDto;
 import models.dtos.TransactionDto;
 
@@ -54,7 +52,7 @@ public class DashboardActivity extends AppCompatActivity {
 		private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 		private final FirebaseDatabase databaseReference = FirebaseDatabase.getInstance("https://wealthwave-c1cca-default-rtdb.europe-west1.firebasedatabase.app");
 		private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-		private LocalDateTime dateTime = LocalDateTime.now();
+		private final LocalDateTime dateTime = LocalDateTime.now();
 
 		@Override
 		protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +61,10 @@ public class DashboardActivity extends AppCompatActivity {
 
 				binding = ActivityDashboardBinding.inflate(getLayoutInflater());
 				setContentView(binding.getRoot());
+
+				//Create a worker to make new remaining budgets in the background
+				WorkRequest createNewRemainingBudget = new PeriodicWorkRequest.Builder(RemainingBudgetWorker.class, 10, TimeUnit.DAYS).build();
+				WorkManager.getInstance(getApplicationContext()).enqueue(createNewRemainingBudget);
 
 				binding.bottomNavigation.setSelectedItemId(R.id.page_1);
 
@@ -96,6 +98,7 @@ public class DashboardActivity extends AppCompatActivity {
 				//Get and display the total expenditure of the previous month
 				LastMonthSpend();
 
+				//Get and display data analytics on the amount spent in the past 30 days
 				CreateDataAnalyticsChart();
 
 		}
@@ -115,14 +118,15 @@ public class DashboardActivity extends AppCompatActivity {
 														for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 																RemainingBudgetDto remainingBudget = dataSnapshot.getValue(RemainingBudgetDto.class);
 																budgetDtoList.add(remainingBudget);
-																if (remainingBudget != null && Objects.equals(remainingBudget.getBudget(), "Entertainment")) {
+																DecimalFormat format = new DecimalFormat("#,###,###,###.00");
 
-																		DecimalFormat format = new DecimalFormat("#,###,###,###.00");
+																Double ammount = 0.00;
 
-																		String amount = format.format(remainingBudget.getRemainingAmt());
-																		binding.amount.setText(String.format("KES %s", amount));
-																		binding.balanceAmount.setText(String.format("KES %s", amount));
+																for (RemainingBudgetDto budget : budgetDtoList) {
+																		ammount += budget.getRemainingAmt();
 																}
+																binding.amount.setText(String.format("KES %s", format.format(ammount)));
+																binding.balanceAmount.setText(String.format("KES %s", format.format(ammount)));
 														}
 
 												}
@@ -152,21 +156,24 @@ public class DashboardActivity extends AppCompatActivity {
 														TransactionDto transaction = dataSnapshot.getValue(TransactionDto.class);
 														DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 														if (transaction != null) {
-																LocalDateTime dateTime1 = LocalDateTime.parse(transaction.getCreatedAt(), formatter);
+																if (!transaction.getTransactionName().equals("Income")) {
+																		LocalDateTime dateTime1 = LocalDateTime.parse(transaction.getCreatedAt(), formatter);
 
-																dateTimeMap.put(transaction.getTransactionID(), dateTime1);
-																transactionDtoList.add(transaction);
+																		dateTimeMap.put(transaction.getTransactionID(), dateTime1);
+																		transactionDtoList.add(transaction);
+																}
 														}
-
 														Double totalSpend = 0.00;
 
+														System.out.println(dateTimeMap);
 														for (TransactionDto transactionDto : transactionDtoList) {
 																LocalDateTime localDateTime = dateTimeMap.get(transactionDto.getTransactionID());
 																LocalDateTime pastWeek = LocalDateTime.now().minusDays(7);
 																if (localDateTime.isAfter(pastWeek) && localDateTime.isBefore(LocalDateTime.now())) {
-																		totalSpend += transaction.getAmount();
+																		totalSpend += transactionDto.getAmount();
 																}
 														}
+
 														DecimalFormat format = new DecimalFormat("#,###,###,###.00");
 														String amount = format.format(totalSpend);
 
@@ -195,7 +202,7 @@ public class DashboardActivity extends AppCompatActivity {
 												transactionDtoList.clear();
 												for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 														LocalDateTime previousMonth = LocalDateTime.now().minusMonths(1);
-														if(previousMonth.getMonth().toString().equals(dataSnapshot.getKey())) {
+														if (previousMonth.getMonth().toString().equals(dataSnapshot.getKey())) {
 																dataSnapshot.getChildren().forEach(snapshot1 -> {
 																		TransactionDto transaction = snapshot1.getValue(TransactionDto.class);
 																		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -250,8 +257,10 @@ public class DashboardActivity extends AppCompatActivity {
 														if (transaction != null) {
 																LocalDateTime dateTime1 = LocalDateTime.parse(transaction.getCreatedAt(), formatter);
 																LocalDate transactionDate = dateTime1.toLocalDate();
-																transactionDtoList.add(transaction);
-																dailySpendMap.put(transactionDate, dailySpendMap.getOrDefault(transactionDate, 0.0) + transaction.getAmount());
+																if (transaction.getTransactionName().equals("Expense")) {
+																		transactionDtoList.add(transaction);
+																		dailySpendMap.put(transactionDate, dailySpendMap.getOrDefault(transactionDate, 0.0) + transaction.getAmount());
+																}
 														}
 												}
 
@@ -272,12 +281,12 @@ public class DashboardActivity extends AppCompatActivity {
 												XAxis x = binding.barChart.getXAxis();
 												x.setEnabled(true);
 												x.setDrawGridLines(false);
-												x.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
+												x.setPosition(XAxis.XAxisPosition.BOTTOM);
 												x.setGranularity(1f);
 												x.setSpaceMin(2f);
 												x.setSpaceMax(1.5f);
 												x.setLabelCount(10);
-												
+
 
 												YAxis y = binding.barChart.getAxisLeft();
 												y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);

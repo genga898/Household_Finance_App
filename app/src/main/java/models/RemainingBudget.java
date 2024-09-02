@@ -8,12 +8,21 @@ public class RemainingBudget {
 		public Double remainingAmt;
 		public String createdAt;
 		public String updatedAt;
+
 		public RemainingBudget(Budget budget, Double remainingAmt){
 				this.budget = budget.getBudgetName();
 				this.remainingAmt = remainingAmt;
 				this.createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 				this.updatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 		}
+
+		public RemainingBudget(Budget budget){
+				this.budget = budget.getBudgetName();
+				this.remainingAmt = budget.getAmount();
+				this.createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+				this.updatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+		}
+
 		public RemainingBudget(){
 
 		}

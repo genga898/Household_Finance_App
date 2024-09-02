@@ -3,6 +3,9 @@ package com.example.wealthwave.user.transactions;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -12,7 +15,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ProgressBar;
+import android.widget.CompoundButton;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -30,6 +33,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
@@ -51,10 +55,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -82,13 +85,70 @@ public class TransactionActivity extends AppCompatActivity {
 				Income
 		}
 
-		enum Categories {
-				Food_and_Groceries,
-				Shopping,
-				Transport,
-				Entertainment,
-				Bills_and_fees,
-				Income
+		enum IncomeCategories {
+				Salary("Salary"),
+				Bonuses("Bonuses"),
+				Rental_income("Rental income"),
+				Commissions("Commissions"),
+				Investment_income("Investment income"),
+				Pension("Pension"),
+				Inheritance("Inheritance"),
+				Government_benefits("Government Benefits");
+
+				private final String label;
+
+				IncomeCategories(String s) {
+						this.label = s;
+				}
+
+				@NonNull
+				@Override
+				public String toString() {
+						return label;
+				}
+
+				public static ArrayList<String> getEnumValues() {
+						IncomeCategories[] categories = IncomeCategories.values();
+						List<String> labelsList = Arrays.asList(Arrays.stream(categories)
+										.map(IncomeCategories::toString)
+										.toArray(String[]::new));
+						return new ArrayList<>(labelsList);
+				}
+		}
+
+		enum ExpenseCategories {
+				Rent("Rent/Mortgage"),
+				Groceries("Groceries"),
+				Transport("Transport"),
+				Health_Insurance("Health Insurance"),
+				Entertainment("Entertainment"),
+				Dining_out("Dining out"),
+				Personal_Grooming("Personal Grooming"),
+				Repairs("Repairs"),
+				Water_bills("Water Bills"),
+				Electricity_bills("Electricity Bills"),
+				Internet_bills("Internet Bills");
+
+				private final String label;
+
+				ExpenseCategories(String s) {
+						this.label = s;
+				}
+
+				@NonNull
+				@Override
+				public String toString() {
+						return label;
+				}
+
+				public static ArrayList<String> getEnumValues() {
+						ExpenseCategories[] categories = ExpenseCategories.values();
+						List<String> labelsList = Arrays.asList(Arrays.stream(categories)
+										.map(ExpenseCategories::toString)
+										.toArray(String[]::new));
+						return new ArrayList<>(labelsList);
+				}
+
 		}
 
 		@Override
@@ -175,29 +235,88 @@ public class TransactionActivity extends AppCompatActivity {
 								MaterialAutoCompleteTextView transactionTextView = bottomSheetView.findViewById(R.id.transaction_type);
 								TextInputLayout categoryInputLayout = bottomSheetView.findViewById(R.id.transaction_category);
 								MaterialAutoCompleteTextView categoryTextView = bottomSheetView.findViewById(R.id.category);
-								TextInputLayout budgetInputLayout = bottomSheetView.findViewById(R.id.transaction_budget);
-								MaterialAutoCompleteTextView budgetTextView = bottomSheetView.findViewById(R.id.budget_name);
+								TextInputLayout groceriesInputLayout = bottomSheetView.findViewById(R.id.transaction_budget);
+								MaterialAutoCompleteTextView groceriesTextView = bottomSheetView.findViewById(R.id.budget_name);
 								TextInputLayout amountInputLayout = bottomSheetView.findViewById(R.id.transacted_amt);
 								TextInputEditText amountTextView = bottomSheetView.findViewById(R.id.amount_transacted);
 
 								// Get a list of transaction types
 								ArrayAdapter<TransactionType> transactionAdapter = new ArrayAdapter<>(getApplicationContext(), com.google.android.material.R.layout.mtrl_auto_complete_simple_item, TransactionType.values());
 								transactionTextView.setAdapter(transactionAdapter);
+								transactionTextView.addTextChangedListener(new TextWatcher() {
+										@Override
+										public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-								// Get a list of all available categories
-								ArrayAdapter<Categories> categoryAdapter = new ArrayAdapter<>(getApplicationContext(), com.google.android.material.R.layout.mtrl_auto_complete_simple_item, Categories.values());
-								categoryTextView.setAdapter(categoryAdapter);
+										}
+
+										@Override
+										public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+										}
+
+										@Override
+										public void afterTextChanged(Editable s) {
+												String transactionType = s.toString();
+												if (!transactionType.isEmpty()) {
+														ArrayAdapter<String> categoryAdapter = null;
+														if (transactionType.equals(TransactionType.Expense.name())) {
+																categoryAdapter = new ArrayAdapter<>(getApplicationContext(), com.google.android.material.R.layout.mtrl_auto_complete_simple_item, ExpenseCategories.getEnumValues());
+														} else if (transactionType.equals(TransactionType.Income.name())) {
+																categoryAdapter = new ArrayAdapter<>(getApplicationContext(), com.google.android.material.R.layout.mtrl_auto_complete_simple_item, IncomeCategories.getEnumValues());
+														}
+
+														categoryTextView.setAdapter(categoryAdapter);
+												}
+
+										}
+								});
+
 
 								//Get Budget List
-								GetBudgetList(new BudgetListCallback() {
+								GetBudgetList(budgetList -> {
+										List<String> budgetName = new ArrayList<>();
+										for (BudgetDto budget : budgetList) {
+												budgetName.add(budget.getBudgetName());
+										}
+										ArrayAdapter<String> budgetArrayAdapter = new ArrayAdapter<>(getApplicationContext(), com.google.android.material.R.layout.mtrl_auto_complete_simple_item, budgetName);
+										groceriesTextView.setAdapter(budgetArrayAdapter);
+								});
+
+								amountTextView.addTextChangedListener(new TextWatcher() {
 										@Override
-										public void onBudgetListRetrieved(List<BudgetDto> budgetList) {
-												List<String> budgetName = new ArrayList<>();
-												for (BudgetDto budget : budgetList) {
-														budgetName.add(budget.getBudgetName());
+										public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+										}
+
+										@Override
+										public void onTextChanged(CharSequence s, int start, int before, int count) {
+												amountInputLayout.setErrorEnabled(false);
+												if (!isValidNumber(amountTextView.getText().toString().trim())) {
+														amountInputLayout.setErrorEnabled(true);
+														amountInputLayout.setError("Amount can only contain numbers");
+														return;
 												}
-												ArrayAdapter<String> budgetArrayAdapter = new ArrayAdapter<>(getApplicationContext(), com.google.android.material.R.layout.mtrl_auto_complete_simple_item, budgetName);
-												budgetTextView.setAdapter(budgetArrayAdapter);
+												getRemainingBudget(groceriesTextView.getText().toString().trim(), remainingBudget -> {
+														if (remainingBudget != null && !TextUtils.isEmpty(amountTextView.getText().toString())) {
+																if (Double.parseDouble(amountTextView.getText().toString().trim()) > remainingBudget.getRemainingAmt()) {
+																		amountInputLayout.setErrorEnabled(true);
+																		amountInputLayout.setError("Amount cannot be greater than budget balance");
+																}
+														}
+												});
+										}
+
+										@Override
+										public void afterTextChanged(Editable s) {
+												amountInputLayout.setErrorEnabled(false);
+												getRemainingBudget(groceriesTextView.getText().toString().trim(), remainingBudget -> {
+														if (remainingBudget != null && !TextUtils.isEmpty(amountTextView.getText().toString())) {
+																if (Double.parseDouble(amountTextView.getText().toString().trim()) > remainingBudget.getRemainingAmt()) {
+																		amountInputLayout.setErrorEnabled(true);
+																		amountInputLayout.setError("Amount cannot be greater than budget balance");
+																}
+														}
+												});
 										}
 								});
 
@@ -207,7 +326,7 @@ public class TransactionActivity extends AppCompatActivity {
 
 												transactionInputLayout.setErrorEnabled(false);
 												categoryInputLayout.setErrorEnabled(false);
-												budgetInputLayout.setErrorEnabled(false);
+												groceriesInputLayout.setErrorEnabled(false);
 												amountInputLayout.setErrorEnabled(false);
 
 												if (transactionTextView.getText().toString().isEmpty()) {
@@ -220,12 +339,12 @@ public class TransactionActivity extends AppCompatActivity {
 														categoryInputLayout.setError("Required");
 														return;
 												}
-												if (budgetTextView.getText().toString().isEmpty()) {
-														budgetInputLayout.setErrorEnabled(true);
-														budgetInputLayout.setError("Required");
+												if (groceriesTextView.getText().toString().isEmpty()) {
+														groceriesInputLayout.setErrorEnabled(true);
+														groceriesInputLayout.setError("Required");
 														return;
 												}
-												if (!isValidNumber(amountTextView.getText().toString())) {
+												if (!isValidNumber(amountTextView.getText().toString().trim())) {
 														amountInputLayout.setErrorEnabled(true);
 														amountInputLayout.setError("Amount can only contain numbers");
 														return;
@@ -239,7 +358,7 @@ public class TransactionActivity extends AppCompatActivity {
 												//Variables to be passed
 												String transactionType = transactionTextView.getText().toString();
 												String category = categoryTextView.getText().toString();
-												String budget = budgetTextView.getText().toString();
+												String budget = groceriesTextView.getText().toString();
 												Double amount = Double.valueOf(amountTextView.getText().toString());
 												LocalDateTime dateTime = LocalDateTime.now();
 
@@ -259,12 +378,13 @@ public class TransactionActivity extends AppCompatActivity {
 																				public void onSuccess(Void unused) {
 
 																						UpdateRemainingBudget(transaction);
+																						saveTransactionToFirestore(transaction);
 
 																						PostHogAnalytics postHogAnalytics = new PostHogAnalytics();
 																						Snackbar.make(bottomSheetView, "Transaction added successfully", Snackbar.LENGTH_SHORT).show();
 																						transactionTextView.setText("");
 																						categoryTextView.setText("");
-																						budgetTextView.setText("");
+																						groceriesTextView.setText("");
 																						amountTextView.setText("");
 																						addTransactionBtn.setEnabled(true);
 																						postHogAnalytics.LogTransactions(transaction);
@@ -279,105 +399,6 @@ public class TransactionActivity extends AppCompatActivity {
 																						addTransactionBtn.setEnabled(true);
 																				}
 																		});
-
-														// Check if the transaction type and register it as an income or expense
-														if (transactionType.equals(TransactionType.Expense.name())) {
-																Expense expense = new Expense(transaction);
-
-																firestore.collection("Expenses")
-																				.document(firebaseAuth.getCurrentUser()
-																								.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-																						@Override
-																						public void onSuccess(DocumentSnapshot documentSnapshot) {
-																								if (documentSnapshot.exists()) {
-																										Map<String, Object> expenses = documentSnapshot.getData();
-																										if (expenses != null) {
-																												expenses.put(expense.getExpenseID(), expense);
-																												firestore.collection("Expenses")
-																																.document(firebaseAuth.getCurrentUser()
-																																				.getUid()).update(expenses).addOnSuccessListener(new OnSuccessListener<Void>() {
-																																		@Override
-																																		public void onSuccess(Void unused) {
-																																				Log.d("Success", "Successful");
-																																		}
-																																}).addOnFailureListener(new OnFailureListener() {
-																																		@Override
-																																		public void onFailure(@NonNull Exception e) {
-																																				e.printStackTrace();
-																																		}
-																																});
-																										} else {
-																												expenses.put(expense.getExpenseID(), expense);
-																												firestore.collection("Expenses")
-																																.document(firebaseAuth.getCurrentUser()
-																																				.getUid()).set(expenses).addOnSuccessListener(new OnSuccessListener<Void>() {
-																																		@Override
-																																		public void onSuccess(Void unused) {
-																																				Log.d("Success", "Successful");
-																																		}
-																																}).addOnFailureListener(new OnFailureListener() {
-																																		@Override
-																																		public void onFailure(@NonNull Exception e) {
-																																				e.printStackTrace();
-																																		}
-																																});
-																										}
-																								}
-																						}
-																				});
-														}
-														if (transactionType.equals(TransactionType.Income.name())) {
-																Income income = new Income(transaction);
-
-
-																firestore.collection("Income")
-																				.document(firebaseAuth.getCurrentUser()
-																								.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-																						@Override
-																						public void onSuccess(DocumentSnapshot documentSnapshot) {
-																								if (documentSnapshot.exists()) {
-																										Map<String, Object> incomes = documentSnapshot.getData();
-																										if (!incomes.isEmpty()) {
-																												incomes.put(income.getIncomeID(), income);
-																												firestore.collection("Income")
-																																.document(firebaseAuth.getCurrentUser()
-																																				.getUid()).update(incomes).addOnSuccessListener(new OnSuccessListener<Void>() {
-																																		@Override
-																																		public void onSuccess(Void unused) {
-																																				Log.d("Success", "Successful");
-																																		}
-																																}).addOnFailureListener(new OnFailureListener() {
-																																		@Override
-																																		public void onFailure(@NonNull Exception e) {
-																																				e.printStackTrace();
-																																		}
-																																});
-																										} else {
-																												incomes.put(income.getIncomeID(), income);
-																												firestore.collection("Income")
-																																.document(firebaseAuth.getCurrentUser()
-																																				.getUid()).set(incomes).addOnSuccessListener(new OnSuccessListener<Void>() {
-																																		@Override
-																																		public void onSuccess(Void unused) {
-																																				Log.d("Success", "Successful");
-																																		}
-																																}).addOnFailureListener(new OnFailureListener() {
-																																		@Override
-																																		public void onFailure(@NonNull Exception e) {
-																																				e.printStackTrace();
-																																		}
-																																});
-																										}
-																								}
-																						}
-																				}).addOnFailureListener(new OnFailureListener() {
-																						@Override
-																						public void onFailure(@NonNull Exception e) {
-																								e.printStackTrace();
-																						}
-																				});
-																System.out.println(transaction.getTransactionID());
-														}
 												}
 										}
 								});
@@ -391,125 +412,185 @@ public class TransactionActivity extends AppCompatActivity {
 						@Override
 						public void onClick(View v) {
 								BottomSheetDialog createBudgetDialog = new BottomSheetDialog(TransactionActivity.this);
-								View createBudgetView = LayoutInflater.from(TransactionActivity.this).inflate(R.layout.bottom_sheet_create_budget_view, null);
+								View createBudgetView = LayoutInflater.from(TransactionActivity.this).inflate(R.layout.bottomsheet_create_budget_view, null);
 								createBudgetDialog.setContentView(createBudgetView);
+								HashMap<String, Budget> selectedBudgetValues = new HashMap<>();
 
 								Button addBudgetBtn = createBudgetView.findViewById(R.id.add_budget);
-								TextInputLayout budgetInputLayout = createBudgetView.findViewById(R.id.budget_name);
-								TextInputEditText budgetTextView = createBudgetView.findViewById(R.id.budget_name_input);
-								TextInputLayout amountInputLayout = createBudgetView.findViewById(R.id.budget_amount);
-								TextInputEditText amountTextView = createBudgetView.findViewById(R.id.budget_amount_text);
-								ProgressBar spinner = new ProgressBar(createBudgetView.getContext());
-								spinner.setIndeterminate(true);
+
+								MaterialCheckBox groceriesCheckBox = createBudgetView.findViewById(R.id.checkbox_groceries);
+								MaterialCheckBox feesCheckBox = createBudgetView.findViewById(R.id.checkbox_sch_fees);
+								MaterialCheckBox insuranceCheckBox = createBudgetView.findViewById(R.id.checkbox_insurance);
+								MaterialCheckBox entertainmentCheckBox = createBudgetView.findViewById(R.id.checkbox_entertainment);
+								MaterialCheckBox utilitiesCheckBox = createBudgetView.findViewById(R.id.checkbox_utilities);
+								MaterialCheckBox debtCheckBox = createBudgetView.findViewById(R.id.checkbox_loans);
+
+								TextInputEditText groceriesAmt = createBudgetView.findViewById(R.id.amt_groceries);
+								TextInputEditText feesAmt = createBudgetView.findViewById(R.id.amt_sch_fees);
+								TextInputEditText insuranceAmt = createBudgetView.findViewById(R.id.amt_insurance);
+								TextInputEditText entertainmentAmt = createBudgetView.findViewById(R.id.amt_entertainment);
+								TextInputEditText utilitiesAmt = createBudgetView.findViewById(R.id.amt_utilities);
+								TextInputEditText debtsAmt = createBudgetView.findViewById(R.id.amt_loans);
 
 
-								addBudgetBtn.setOnClickListener(new View.OnClickListener() {
-										@Override
-										public void onClick(View v) {
-												//Validate user data
+								CompoundButton.OnCheckedChangeListener checkedChangeListener = (buttonView, isChecked) -> {
+										MaterialCheckBox checkBox = (MaterialCheckBox) buttonView;
+										String name = checkBox.getText().toString();
 
-												//Reset the error state of textInputFields
-												amountInputLayout.setErrorEnabled(false);
-												budgetInputLayout.setErrorEnabled(false);
+										TextInputLayout inputLayout = getTextInputLayout(name, createBudgetView);
+										TextInputEditText amount = getBudgetAmount(name, createBudgetView);
 
-												if (budgetTextView.getText().toString().isEmpty()) {
-														budgetInputLayout.setErrorEnabled(true);
-														budgetInputLayout.setError("Required");
-														return;
-												}
-												if (amountTextView.getText().toString().isEmpty()) {
-														amountInputLayout.setErrorEnabled(true);
-														amountInputLayout.setError("Required");
-														return;
-												}
-												if (!isValidString(budgetTextView.getText().toString())) {
-														budgetInputLayout.setErrorEnabled(true);
-														budgetInputLayout.setError("The name can only contain letters and must start with a capital letter");
-														return;
-												}
-												if (!isValidNumber(amountTextView.getText().toString())) {
-														amountInputLayout.setErrorEnabled(true);
-														amountInputLayout.setError("Amount can only contain numbers");
-														return;
-												}
-												if (Float.parseFloat(amountTextView.getText().toString()) <= 0) {
-														amountInputLayout.setErrorEnabled(true);
-														amountInputLayout.setError("Amount can't be zero");
-														return;
+										TextWatcher watcher = new TextWatcher() {
+												@Override
+												public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
 												}
 
-												// Get user information from the database and show the budgets created by the user
-												if (firebaseAuth.getCurrentUser() != null) {
+												@Override
+												public void onTextChanged(CharSequence s, int start, int before, int count) {
+														if (!isValidNumber(amount.getText().toString())) {
+																inputLayout.setErrorEnabled(true);
+																inputLayout.setError("Please enter a valid number");
+														}
+												}
 
-														Budget budget = new Budget(
-																		budgetTextView.getText().toString().trim(),
-																		Double.valueOf(amountTextView.getText().toString().trim()));
-														RemainingBudget remainingBudget = new RemainingBudget(budget, budget.getAmount());
-														LocalDateTime localDateTime = LocalDateTime.now();
+												@Override
+												public void afterTextChanged(Editable s) {
+														if (!TextUtils.isEmpty(s.toString())) {
+																inputLayout.setErrorEnabled(false);
+																Budget budget = new Budget(name, Double.valueOf(s.toString()));
+																selectedBudgetValues.put(name, budget);
+														}
+												}
+										};
+										if (isChecked) {
+												amount.addTextChangedListener(watcher);
+										}
+								};
 
-														addBudgetBtn.setEnabled(false);
+								groceriesCheckBox.setOnCheckedChangeListener(checkedChangeListener);
+								feesCheckBox.setOnCheckedChangeListener(checkedChangeListener);
+								insuranceCheckBox.setOnCheckedChangeListener(checkedChangeListener);
+								entertainmentCheckBox.setOnCheckedChangeListener(checkedChangeListener);
+								utilitiesCheckBox.setOnCheckedChangeListener(checkedChangeListener);
+								debtCheckBox.setOnCheckedChangeListener(checkedChangeListener);
 
-														GetBudgetList(new BudgetListCallback() {
-																@Override
-																public void onBudgetListRetrieved(List<BudgetDto> budgetList) {
-																		if (budgetList.contains(budgetTextView.getText().toString().trim())) {
-																				budgetInputLayout.setErrorEnabled(true);
-																				budgetInputLayout.setError("A budget with this name already exists");
+								addBudgetBtn.setOnClickListener(v1 -> {
+										addBudgetBtn.setEnabled(false);
+										LocalDateTime localDateTime = LocalDateTime.now();
+										PostHogAnalytics analytics = new PostHogAnalytics();
+										databaseReference = firebaseDatabase.getReference("budgets");
+
+										selectedBudgetValues.forEach((string, budget) -> {
+												databaseReference
+																.child(firebaseAuth.getCurrentUser().getUid())
+																.child(budget.getBudgetName())
+																.setValue(budget).addOnCompleteListener(task -> {
+																		if (task.isSuccessful()) {
+																				analytics.LogCreatedBudgets(budget);
 																				addBudgetBtn.setEnabled(true);
-																		} else {
-																				databaseReference = firebaseDatabase.getReference("budgets");
-																				databaseReference.child(firebaseAuth.getCurrentUser().getUid())
-																								.child(budget.getBudgetName())
-																								.setValue(budget).addOnCompleteListener(new OnCompleteListener<Void>() {
-																										@Override
-																										public void onComplete(@NonNull Task<Void> task) {
-																												if (task.isSuccessful()) {
-																														PostHogAnalytics postHogAnalytics = new PostHogAnalytics();
-																														Snackbar.make(createBudgetView, "Budget created successfully", Snackbar.LENGTH_SHORT).show();
-																														budgetTextView.setText("");
-																														amountTextView.setText("");
-																														addBudgetBtn.setEnabled(true);
-																														postHogAnalytics.LogCreatedBudgets(budget);
-																												}
-																										}
-																								}).addOnFailureListener(new OnFailureListener() {
-																										@Override
-																										public void onFailure(@NonNull Exception e) {
-																												Snackbar.make(createBudgetView, "An error occurred. Please try again", Snackbar.LENGTH_SHORT)
-																																.setBackgroundTint(getResources().getColor(R.color.md_theme_light_error)).
-																																show();
-																												addBudgetBtn.setEnabled(true);
-																										}
-																								});
+																				Snackbar.make(createBudgetView, "Budget created successfully", Snackbar.LENGTH_SHORT).show();
 
-																				// Assign remaining budget for a specific budget on a specific month
+
+																				//Assign remaining budget values
+																				RemainingBudget remainingBudget = new RemainingBudget(budget, budget.getAmount());
 																				databaseReference = firebaseDatabase.getReference("Remaining Budgets");
 																				databaseReference.child(firebaseAuth.getCurrentUser().getUid())
 																								.child(String.valueOf(localDateTime.getYear()))
 																								.child(String.valueOf(localDateTime.getMonth()))
 																								.child(budget.getBudgetName())
-																								.setValue(remainingBudget).addOnSuccessListener(new OnSuccessListener<Void>() {
-																										@Override
-																										public void onSuccess(Void unused) {
-																												Log.d("Success", "Successful");
-																										}
-																								}).addOnFailureListener(new OnFailureListener() {
-																										@Override
-																										public void onFailure(@NonNull Exception e) {
-																												e.printStackTrace();
-																										}
-																								});
-																		}
-																}
-														});
-												}
-										}
-								});
+																								.setValue(remainingBudget).addOnSuccessListener(unused -> {
+																										Log.d("Success", "Successful");
 
+																										//Clear user inputs
+																										groceriesCheckBox.setChecked(false);
+																										feesCheckBox.setChecked(false);
+																										insuranceCheckBox.setChecked(false);
+																										entertainmentCheckBox.setChecked(false);
+																										utilitiesCheckBox.setChecked(false);
+																										debtCheckBox.setChecked(false);
+
+																										groceriesAmt.setText("");
+																										feesAmt.setText("");
+																										insuranceAmt.setText("");
+																										entertainmentAmt.setText("");
+																										utilitiesAmt.setText("");
+																										debtsAmt.setText("");
+
+
+																								}).addOnFailureListener(e -> e.printStackTrace());
+
+																		}
+																});
+										});
+								});
 								createBudgetDialog.create();
 								createBudgetDialog.show();
 						}
 				});
+		}
+
+		private TextInputEditText getBudgetAmount(String category, View view) {
+				switch (category) {
+						case "Groceries":
+								return view.findViewById(R.id.amt_groceries);
+						case "School Fees":
+								return view.findViewById(R.id.amt_sch_fees);
+						case "Insurance":
+								return view.findViewById(R.id.amt_insurance);
+						case "Entertainment":
+								return view.findViewById(R.id.amt_entertainment);
+						case "Utilities":
+								return view.findViewById(R.id.amt_utilities);
+						case "Debts":
+								return view.findViewById(R.id.amt_loans);
+						default:
+								return null;
+				}
+		}
+
+		private TextInputLayout getTextInputLayout(String category, View view) {
+				switch (category) {
+						case "Groceries":
+								return view.findViewById(R.id.groceries_amt);
+						case "School Fees":
+								return view.findViewById(R.id.sch_fees_amt);
+						case "Insurance":
+								return view.findViewById(R.id.insurance_amt);
+						case "Entertainment":
+								return view.findViewById(R.id.entertainment_amt);
+						case "Utilities":
+								return view.findViewById(R.id.utilities_amt);
+						case "Debts":
+								return view.findViewById(R.id.loans_amt);
+						default:
+								return null;
+				}
+		}
+
+
+		private interface RemainingBudgetCallback {
+				void onCallBack(RemainingBudget remainingBudget);
+		}
+
+		private void getRemainingBudget(String budget, RemainingBudgetCallback callback) {
+				LocalDateTime dateTime = LocalDateTime.now();
+				databaseReference = firebaseDatabase.getReference("Remaining Budgets").child(firebaseAuth.getCurrentUser().getUid());
+				databaseReference.child(String.valueOf(dateTime.getYear()))
+								.child(String.valueOf(dateTime.getMonth()))
+								.child(budget).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+										@Override
+										public void onComplete(@NonNull Task<DataSnapshot> task) {
+
+												DataSnapshot snapshot = task.getResult();
+												if (snapshot.exists()) {
+														RemainingBudget remainingBudget = snapshot.getValue(RemainingBudget.class);
+														callback.onCallBack(remainingBudget);
+												} else {
+														callback.onCallBack(null);
+												}
+										}
+								});
 		}
 
 		//Validate string inputs
@@ -523,7 +604,7 @@ public class TransactionActivity extends AppCompatActivity {
 		}
 
 		private boolean isValidNumber(String number) {
-				String numberRegex = "0-9]+(\\.[0-9]+)?";
+				String numberRegex = "^(?:-(?:[1-9](?:\\d{0,2}(?:,\\d{3})+|\\d*))|(?:0|(?:[1-9](?:\\d{0,2}(?:,\\d{3})+|\\d*))))(?:.\\d+|)$";
 
 				Pattern pattern = Pattern.compile(numberRegex);
 				Matcher matcher = pattern.matcher(number);
@@ -585,18 +666,89 @@ public class TransactionActivity extends AppCompatActivity {
 				});
 		}
 
+		// Save expense or income to db
+		private void saveTransactionToFirestore(Transaction transaction) {
+				String transactionType = transaction.getTransactionName();
+				String userId = firebaseAuth.getCurrentUser().getUid();
+
+				if (transactionType.equals(TransactionType.Expense.name())) {
+						Expense expense = new Expense(transaction);
+						saveToFirestoreCollection("Expenses", userId, expense.getExpenseID(), expense);
+				} else if (transactionType.equals(TransactionType.Income.name())) {
+						Income income = new Income(transaction);
+						saveToFirestoreCollection("Income", userId, income.getIncomeID(), income);
+				}
+		}
+
+		private void saveToFirestoreCollection(String collectionName, String userId, String documentId, Object data) {
+				FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+				firestore.collection(collectionName)
+								.document(userId)
+								.get()
+								.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+										@Override
+										public void onSuccess(DocumentSnapshot documentSnapshot) {
+												if (documentSnapshot.exists()) {
+														Map<String, Object> dataMap = documentSnapshot.getData();
+														if (dataMap != null) {
+																dataMap.put(documentId, data);
+																firestore.collection(collectionName)
+																				.document(userId)
+																				.update(dataMap)
+																				.addOnSuccessListener(new OnSuccessListener<Void>() {
+																						@Override
+																						public void onSuccess(Void unused) {
+																								Log.d("Success", "Successful");
+																						}
+																				})
+																				.addOnFailureListener(new OnFailureListener() {
+																						@Override
+																						public void onFailure(@NonNull Exception e) {
+																								e.printStackTrace();
+																						}
+																				});
+														} else {
+																dataMap.put(documentId, data);
+																firestore.collection(collectionName)
+																				.document(userId)
+																				.set(dataMap)
+																				.addOnSuccessListener(new OnSuccessListener<Void>() {
+																						@Override
+																						public void onSuccess(Void unused) {
+																								Log.d("Success", "Successful");
+																						}
+																				})
+																				.addOnFailureListener(new OnFailureListener() {
+																						@Override
+																						public void onFailure(@NonNull Exception e) {
+																								e.printStackTrace();
+																						}
+																				});
+														}
+												}
+										}
+								})
+								.addOnFailureListener(new OnFailureListener() {
+										@Override
+										public void onFailure(@NonNull Exception e) {
+												e.printStackTrace();
+										}
+								});
+		}
+
+
 		//Get user transactions
 		public void GetUserTransactions() {
-
-				ArrayList<TransactionDto> enteredTransactions = new ArrayList<>();
 				CategoryRecyclerViewAdapter viewAdapter;
 				ArrayList<LocalDate> transactionDate = new ArrayList<>();
 				HashMap<LocalDate, ArrayList<TransactionDto>> transactionHashMap = new HashMap<>();
 
 
 				binding.transactionsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-				viewAdapter = new CategoryRecyclerViewAdapter(this, transactionHashMap, sortTransactionDates(transactionDate));
+				viewAdapter = new CategoryRecyclerViewAdapter(this, transactionHashMap, transactionDate);
 				binding.transactionsRecyclerView.setAdapter(viewAdapter);
+				binding.transactionsRecyclerView.setHasFixedSize(false);
 				binding.transactionsRecyclerView.addItemDecoration(new MaterialDividerItemDecoration(this, MaterialDividerItemDecoration.VERTICAL));
 
 
@@ -608,14 +760,12 @@ public class TransactionActivity extends AppCompatActivity {
 								public void onDataChange(@NonNull DataSnapshot snapshot) {
 										transactionDate.clear();
 										transactionHashMap.clear();
-										enteredTransactions.clear();
 										binding.transactionFilter.setSingleSelection(true);
 										binding.transactionFilter.setOnCheckedStateChangeListener(new ChipGroup.OnCheckedStateChangeListener() {
 												@Override
 												public void onCheckedChanged(@NonNull ChipGroup chipGroup, @NonNull List<Integer> list) {
 														transactionDate.clear();
 														transactionHashMap.clear();
-														enteredTransactions.clear();
 
 														for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 																dataSnapshot.getChildren().forEach(dataSnapshot1 -> {
@@ -630,28 +780,22 @@ public class TransactionActivity extends AppCompatActivity {
 																										if (chip1.getText().equals(transaction.getTransactionName())) {
 																												if (!transactionDate.contains(localDateTime.toLocalDate())) {
 																														transactionDate.add(localDateTime.toLocalDate());
+																														transactionHashMap.put(localDateTime.toLocalDate(), new ArrayList<>());
 																												}
-																												if (transactionHashMap.containsKey(localDateTime.toLocalDate())) {
-																														if (LocalDate.parse(transaction.getCreatedAt(), formatter).equals(localDateTime.toLocalDate())) {
-																																transactionHashMap.get(localDateTime.toLocalDate()).add(transaction);
-																														}
-																												} else {
-																														transactionHashMap.put(localDateTime.toLocalDate(), enteredTransactions);
-																												}
+
+																												sortTransactionDates(transactionDate);
+																												transactionHashMap.get(localDateTime.toLocalDate()).add(transaction);
 																										}
 																								}
 																								//Return a list of all transactions when there is no filter applied
 																								if (list.isEmpty()) {
 																										if (!transactionDate.contains(localDateTime.toLocalDate())) {
 																												transactionDate.add(localDateTime.toLocalDate());
+																												transactionHashMap.put(localDateTime.toLocalDate(), new ArrayList<>());
 																										}
-																										if (transactionHashMap.containsKey(localDateTime.toLocalDate())) {
-																												if (LocalDate.parse(transaction.getCreatedAt(), formatter).equals(localDateTime.toLocalDate())) {
-																														transactionHashMap.get(localDateTime.toLocalDate()).add(transaction);
-																												}
-																										} else {
-																												transactionHashMap.put(localDateTime.toLocalDate(), enteredTransactions);
-																										}
+
+																										sortTransactionDates(transactionDate);
+																										transactionHashMap.get(localDateTime.toLocalDate()).add(transaction);
 																								}
 																						}
 																		);
@@ -677,22 +821,16 @@ public class TransactionActivity extends AppCompatActivity {
 
 																						if (!transactionDate.contains(localDateTime.toLocalDate())) {
 																								transactionDate.add(localDateTime.toLocalDate());
+																								transactionHashMap.put(localDateTime.toLocalDate(), new ArrayList<>());
 																						}
-																						if (!transactionHashMap.containsKey(localDateTime.toLocalDate())) {
-																								transactionHashMap.put(localDateTime.toLocalDate(), enteredTransactions);
-																						}
-																						else {
-																								if (LocalDate.parse(transaction.getCreatedAt(), formatter).equals(localDateTime.toLocalDate())) {
-																										transactionHashMap.get(localDateTime.toLocalDate()).add(transaction);
-																								}
-																						}
+
+																						sortTransactionDates(transactionDate);
+																						transactionHashMap.get(localDateTime.toLocalDate()).add(transaction);
 
 																				}
 																);
 														});
 												}
-												System.out.println(transactionHashMap);
-												System.out.println(transactionDate);
 												viewAdapter.notifyDataSetChanged();
 										}
 								}
@@ -713,9 +851,11 @@ public class TransactionActivity extends AppCompatActivity {
 						databaseReference = firebaseDatabase.getReference("Remaining Budgets").child(firebaseAuth.getCurrentUser().getUid());
 						databaseReference.child(String.valueOf(dateTime.getYear()))
 										.child(String.valueOf(dateTime.getMonth()))
-										.child(transaction.getBudgetID()).addValueEventListener(new ValueEventListener() {
+										.child(transaction.getBudgetID()).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 												@Override
-												public void onDataChange(@NonNull DataSnapshot snapshot) {
+												public void onComplete(@NonNull Task<DataSnapshot> task) {
+
+														DataSnapshot snapshot = task.getResult();
 														if (snapshot.exists()) {
 																RemainingBudget budget = snapshot.getValue(RemainingBudget.class);
 																System.out.println(snapshot.getValue());
@@ -732,11 +872,6 @@ public class TransactionActivity extends AppCompatActivity {
 																						.child(transaction.getBudgetID()).updateChildren(remainingBudgetMap);
 																}
 														}
-												}
-
-												@Override
-												public void onCancelled(@NonNull DatabaseError error) {
-														Log.w("Database Error", error.getDetails());
 												}
 										});
 				}

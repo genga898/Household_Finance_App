@@ -52,13 +52,14 @@ public class CategoryRecyclerViewAdapter extends RecyclerView.Adapter<CategoryRe
 		public void onBindViewHolder(@NonNull CategoryRecyclerViewAdapter.MyViewHolder holder, int position) {
 
 				LocalDate date = dateList.get(position);
-				System.out.println(sortTransactionsByDate(categorizedTransactions.get(date)));
+				System.out.println(dateList);
 
 				TransactionRecyclerViewAdapter adapter = new TransactionRecyclerViewAdapter(holder.itemView.getContext(), sortTransactionsByDate(categorizedTransactions.get(date)));
 
 				holder.transactionDate.setText(String.format("%s, %s %s", UCharacter.toTitleCase(Locale.US, date.getDayOfWeek().toString(), null), UCharacter.toTitleCase(Locale.US, date.getMonth().toString(), null), date.getDayOfMonth()));
 				holder.transactionRecyclerView.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
 				holder.transactionRecyclerView.setAdapter(adapter);
+				holder.transactionRecyclerView.setHasFixedSize(false);
 				adapter.notifyDataSetChanged();
 		}
 

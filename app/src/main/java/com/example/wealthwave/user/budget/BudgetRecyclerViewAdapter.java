@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -75,15 +76,15 @@ public class BudgetRecyclerViewAdapter extends RecyclerView.Adapter<BudgetRecycl
 
 		public static class MyViewHolder extends RecyclerView.ViewHolder {
 				TextView BudgetName, amount;
-				CircularProgressIndicator progressIndicator;
+				ImageButton options;
 
 				public MyViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
 						super(itemView);
 
 						BudgetName = itemView.findViewById(R.id.budget_name);
 						amount = itemView.findViewById(R.id.budget_amount);
-						progressIndicator = itemView.findViewById(R.id.progress_circular);
-						itemView.setOnClickListener(new View.OnClickListener() {
+						options = itemView.findViewById(R.id.menu_items);
+						options.setOnClickListener(new View.OnClickListener() {
 								@Override
 								public void onClick(View v) {
 										if (recyclerViewInterface != null){

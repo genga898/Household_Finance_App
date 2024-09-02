@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".user.reports.ReportActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            style="@style/Widget.Material3.Button.TextButton"
+            android:id="@+id/back_button"
+            android:src="@drawable/baseline_arrow_back_24"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:contentDescription="Back Button"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textColor="@color/md_theme_light_primary" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="Report"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/md_theme_light_primary"
+            android:textSize="30sp" />
+    </RelativeLayout>
+
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Material3.CardView.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginVertical="5dp"
+        android:backgroundTint="@color/md_theme_light_onPrimary">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:textAlignment="center"
+                android:text="Daily spend in the past 7 days"
+                android:textColor="@color/md_theme_light_primary"
+                android:textSize="15sp" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/bar_chart1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Material3.CardView.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginVertical="5dp"
+        android:backgroundTint="@color/md_theme_light_onPrimary">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/cash_flow_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:textAlignment="center"
+                android:text="Daily spend in the past 30 days"
+                android:textColor="@color/md_theme_light_primary"
+                android:textSize="15sp" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/bar_chart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

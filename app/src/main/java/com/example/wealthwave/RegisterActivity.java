@@ -178,7 +178,6 @@ public class RegisterActivity extends AppCompatActivity {
 																Map<String, Object> userInfo = new HashMap<>();
 																userInfo.put("name",user.getName());
 																userInfo.put("email", user.getEmailAddress());
-																userInfo.put("role", user.getRole());
 
 																/* Store extra information about users */
 																firestore = FirebaseFirestore.getInstance();
@@ -234,11 +233,12 @@ public class RegisterActivity extends AppCompatActivity {
 														Snackbar.make(registerBtn, "This email address is already in use, kindly use a different email address", Snackbar.LENGTH_LONG)
 																		.setBackgroundTint(getResources().getColor(R.color.md_theme_light_error))
 																		.show();
+												} else {
+														Snackbar.make(registerBtn, "A problem occurred during creation of the account.\nPlease try again", Snackbar.LENGTH_SHORT)
+																		.setBackgroundTint(getResources().getColor(R.color.md_theme_light_error))
+																		.show();
+														registerBtn.setEnabled(true);
 												}
-												Snackbar.make(registerBtn, "A problem occurred during creation of the account.\nPlease try again", Snackbar.LENGTH_SHORT)
-																.setBackgroundTint(getResources().getColor(R.color.md_theme_light_error))
-																.show();
-												registerBtn.setEnabled(true);
 										}
 								});
 		}
